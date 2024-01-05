@@ -1,5 +1,5 @@
-﻿using HttpRequestSpy.Assertions;
-using HttpRequestSpy.Assertions.HttpRequestAssertions;
+﻿using HttpRequest.Spy.Assertions;
+using HttpRequest.Spy.Assertions.HttpRequestAssertions;
 
 namespace sas.simulators.soap.Soap.Spy;
 

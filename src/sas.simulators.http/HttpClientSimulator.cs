@@ -1,4 +1,4 @@
-﻿using HttpRequestSpy;
+﻿using HttpRequest.Spy;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using sas.Scenario;
@@ -12,7 +12,7 @@ public abstract class HttpClientSimulator<THttpClient> : ISimulateBehaviour
 {
     protected IDeferHttpRequestHandling HttpClient { get; } = Substitute.For<IDeferHttpRequestHandling>();
 
-    protected HttpRequestSpy.HttpRequestSpy Spy { get; } = HttpRequestSpy.HttpRequestSpy.Create();
+    protected HttpRequestSpy Spy { get; } = HttpRequestSpy.Create();
 
     private readonly Uri _baseUri = new($"https://{typeof(THttpClient).Name.ToLower()}-tests/");
 
@@ -35,9 +35,9 @@ public abstract class HttpClientSimulator<THttpClient> : ISimulateBehaviour
 
         var parameters = constructor.GetParameters().Select(param =>
         {
-            if (param.ParameterType == typeof(System.Net.Http.HttpClient))
+            if (param.ParameterType == typeof(HttpClient))
             {
-                return new System.Net.Http.HttpClient(new SpyHttpMessageHandler(Spy,
+                return new HttpClient(new SpyHttpMessageHandler(Spy,
                     new HttpMessageInterceptionHandler(HttpClient, _baseUri, request => $"A {request.Method.Method} to {request.RequestUri} was never stubbed")))
                 {
                     BaseAddress = _baseUri

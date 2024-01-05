@@ -15,8 +15,11 @@
 
 
   <ItemGroup>
-    <PackageReference Include="HttpRequestSpy" Version="0.0.26" />
     <PackageReference Include="System.ServiceModel.Http" Version="4.10.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="HttpRequest.Spy" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

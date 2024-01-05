@@ -1,6 +1,6 @@
 ﻿using System.ServiceModel;
 using System.ServiceModel.Channels;
-using HttpRequestSpy;
+using HttpRequest.Spy;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using sas.Scenario;
@@ -22,7 +22,7 @@ public abstract class SoapClientSimulator<TChannel, TClient> : ISimulateBehaviou
     private readonly Binding _binding = new BasicHttpBinding();
 
     private readonly IDeferHttpRequestHandling _httpClient;
-    private readonly HttpRequestSpy.HttpRequestSpy _httpRequestSpy;
+    private readonly HttpRequestSpy _httpRequestSpy;
     
     protected SoapClientMessageHandler SoapClient { get; }
     
@@ -31,7 +31,7 @@ public abstract class SoapClientSimulator<TChannel, TClient> : ISimulateBehaviou
     protected SoapClientSimulator()
     {
         _httpClient = Substitute.For<IDeferHttpRequestHandling>();
-        _httpRequestSpy = HttpRequestSpy.HttpRequestSpy.Create();
+        _httpRequestSpy = HttpRequestSpy.Create();
         SoapClient = new SoapClientMessageHandler(_httpClient);
         SoapRequestSpy = new SoapRequestSpy(Uri, _httpRequestSpy);
 
