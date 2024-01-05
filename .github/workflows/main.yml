@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branch: main
+  pull_request:
+    branch: main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      SOLUTION: "src/sas.sln"
+      BUILD_CONFIG: "Release"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: |
+            8.0.x
+            7.0.x
+            6.0.x
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: "6.0.x"
+          includePrerelease: true
+
+      - name: Determine Version
+        uses: gittools/actions/gitversion/execute@v0
+        with:
+          useConfigFile: true
+          configFilePath: "./src/GitVersion.yml"
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION }}
+
+      - name: Build
+        run: dotnet build ${{ env.SOLUTION }} --configuration ${{ env.BUILD_CONFIG }} --no-restore
+
+      - name: Run tests
+        run: dotnet test ${{ env.SOLUTION }} --no-restore --verbosity normal
+
+      - name: Pack
+        run: |
+          cd ./src
+          dotnet pack --configuration Release --output ../nupkg /p:Version=${{ env.GITVERSION_SEMVER }}
+
+      - name: Publish
+        run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_ORG_API_KEY }} --source https://api.nuget.org/v3/index.json

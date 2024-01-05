@@ -1,0 +1,8 @@
+assembly-versioning-scheme: MajorMinorPatch
+mode: Mainline
+increment: Patch
+branches:
+  main:
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
