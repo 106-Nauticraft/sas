@@ -1,12 +1,13 @@
 ﻿using Azure.Core;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
+using sas.Configurations;
 
-namespace sas.Configurations;
+namespace sas.configurations.azure;
 
 public class FromKeyVaultConfiguration : IEnrichConfiguration
 {
-    public static readonly InteractiveBrowserCredential InteractiveBrowserCredential =
+    private static readonly InteractiveBrowserCredential InteractiveBrowserCredential =
         new ();
     
     private readonly string _keyVaultName;

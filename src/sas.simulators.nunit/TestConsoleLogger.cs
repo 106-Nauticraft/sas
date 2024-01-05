@@ -53,7 +53,12 @@ public class TestConsoleLogger : ILogger
         }
     }
 
-    public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
+#pragma warning disable CS8633 // Nullability in constraints for type parameter doesn't match the constraints for type parameter in implicitly implemented interface method'.
+    public IDisposable BeginScope<TState>(TState state) where TState : notnull
+#pragma warning restore CS8633 // Nullability in constraints for type parameter doesn't match the constraints for type parameter in implicitly implemented interface method'.
+#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
     {
         return NullScope.Instance;
     }
