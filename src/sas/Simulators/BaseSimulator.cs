@@ -4,7 +4,7 @@ using sas.Scenario;
 
 namespace sas.Simulators;
 
-public abstract class Simulator<T> : ISimulateBehaviour
+public abstract class BaseSimulator<T> : ISimulateBehaviour
     where T : class
 {
     protected T Instance { get; } = Substitute.For<T>();

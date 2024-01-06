@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using sas.Scenario;
 
-namespace sas.Simulators;
+namespace sas.Simulators.Auth;
 
 public class ByPassAuthSimulator : ISimulateBehaviour
 {

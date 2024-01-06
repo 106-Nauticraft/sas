@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using sas.Scenario;
 
-namespace sas.Simulators;
+namespace sas.Simulators.Options;
 
-public abstract class OptionsSimulator<TOptions> : ISimulateBehaviour
+public abstract class BaseOptionsSimulator<TOptions> : ISimulateBehaviour
     where TOptions : class
 {
     protected abstract Action<TOptions> Configure(BaseScenario scenario);

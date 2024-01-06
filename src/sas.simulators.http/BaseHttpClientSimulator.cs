@@ -7,7 +7,7 @@ using sas.simulators.http.Http;
 
 namespace sas.simulators.http;
 
-public abstract class HttpClientSimulator<THttpClient> : ISimulateBehaviour
+public abstract class BaseHttpClientSimulator<THttpClient> : ISimulateBehaviour
     where THttpClient : class
 {
     protected IDeferHttpRequestHandling HttpClient { get; } = Substitute.For<IDeferHttpRequestHandling>();

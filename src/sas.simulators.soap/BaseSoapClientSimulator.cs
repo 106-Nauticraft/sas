@@ -11,7 +11,7 @@ using sas.simulators.soap.Soap.Spy;
 
 namespace sas.simulators.soap;
 
-public abstract class SoapClientSimulator<TChannel, TClient> : ISimulateBehaviour
+public abstract class BaseSoapClientSimulator<TChannel, TClient> : ISimulateBehaviour
     where TChannel: class
     where TClient : ClientBase<TChannel>, TChannel
 {
@@ -28,7 +28,7 @@ public abstract class SoapClientSimulator<TChannel, TClient> : ISimulateBehaviou
     
     protected SoapRequestSpy SoapRequestSpy { get; }
 
-    protected SoapClientSimulator()
+    protected BaseSoapClientSimulator()
     {
         _httpClient = Substitute.For<IDeferHttpRequestHandling>();
         _httpRequestSpy = HttpRequestSpy.Create();
