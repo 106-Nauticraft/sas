@@ -1,4 +1,4 @@
-﻿namespace sas.Api.Setup;
+﻿namespace sas.Scenario.Setup;
 
 public delegate T Setup<T>(T current);
 
