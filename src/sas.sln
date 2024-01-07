@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sas.nfluent.tests", "sas.nf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sas.configurations.azure", "sas.configurations.azure\sas.configurations.azure.csproj", "{4550C119-7F91-4381-817F-76645242F894}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{14C8B2E5-89EA-4CC2-BE36-B3FCB06CAAF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sample.api", "..\samples\sample.api\sample.api.csproj", "{E83BC121-D0CE-4FC0-AD5D-5A2AAFE2C3A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,5 +70,12 @@ Global
 		{4550C119-7F91-4381-817F-76645242F894}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4550C119-7F91-4381-817F-76645242F894}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4550C119-7F91-4381-817F-76645242F894}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E83BC121-D0CE-4FC0-AD5D-5A2AAFE2C3A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E83BC121-D0CE-4FC0-AD5D-5A2AAFE2C3A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E83BC121-D0CE-4FC0-AD5D-5A2AAFE2C3A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E83BC121-D0CE-4FC0-AD5D-5A2AAFE2C3A1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E83BC121-D0CE-4FC0-AD5D-5A2AAFE2C3A1} = {14C8B2E5-89EA-4CC2-BE36-B3FCB06CAAF2}
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,14 @@
+@sample.api_HostAddress = http://localhost:5183
+
+GET {{sample.api_HostAddress}}/weatherforecast/london
+Accept: application/json
+
+###
+
+GET {{sample.api_HostAddress}}/weatherforecast/paris
+Accept: application/json
+
+###
+
+GET {{sample.api_HostAddress}}/weatherforecast/newyork
+Accept: application/json
