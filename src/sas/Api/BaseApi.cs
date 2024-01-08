@@ -38,11 +38,7 @@ public abstract class BaseApi<TStartup>
         HttpClient = factory.CreateClient();
         _services = factory.Services;
     }
-
-    protected BaseApi(BaseScenario scenario, ISimulateBehaviour[] simulators) : this(scenario, simulators, Array.Empty<IEnrichConfiguration>())
-    {
-    }
-
+    
     private static Action<IConfigurationBuilder>ConfigureAppConfiguration(IEnrichConfiguration[] additionalConfigurations) =>
         configurationBuilder =>
         {

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Globalization;
+using System.Text.Json.Serialization;
 using sample.api.Domain;
 using sample.api.HttpClients.Tools;
 using TimeZone = sample.api.Domain.TimeZone;
@@ -22,8 +23,8 @@ public class OpenMeteoHttpClient
     public async Task<IEnumerable<DailyWeatherForecast>> GetDailyWeatherForecasts(Coordinates coordinates, TimeZone timeZone, int nbDays)
     {
         var url = UrlBuilder.From("forecast")
-            .With("latitude", coordinates.Latitude)
-            .With("longitude", coordinates.Longitude)
+            .With("latitude", coordinates.Latitude.ToString(CultureInfo.CreateSpecificCulture("en-US")))
+            .With("longitude", coordinates.Longitude.ToString(CultureInfo.CreateSpecificCulture("en-US")))
             .With("timezone", timeZone.Name)
             .With("forecast_days", nbDays, days => days is > 0 and <= 15)
             .With("daily", [
