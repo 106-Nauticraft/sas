@@ -53,7 +53,7 @@ jobs:
       - name: Pack
         run: |
           cd ./src
-          dotnet pack --configuration Release --output ../nupkg /p:Version=${{ env.GITVERSION_SEMVER }}
+          dotnet pack --configuration Release --output ../nupkg /p:Version=${{ env.GitVersion_SemVer }}
 
       - name: Publish
         run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_ORG_API_KEY }} --source https://api.nuget.org/v3/index.json
