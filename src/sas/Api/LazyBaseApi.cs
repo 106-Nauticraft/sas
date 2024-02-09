@@ -50,7 +50,7 @@ public abstract class LazyBaseApi<TStartup> where TStartup : class
             configurationBuilder.Sources.Clear();
             configurationBuilder.Sources.Add(new JsonConfigurationSource
             {
-                Path = "appSettings.json",
+                Path = "appsettings.json",
                 Optional = false
             });
 

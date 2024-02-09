@@ -45,8 +45,8 @@ public abstract class BaseApi<TStartup>
             configurationBuilder.Sources.Clear();
             configurationBuilder.Sources.Add(new JsonConfigurationSource
             {
-                Path = "appSettings.json",
-                Optional = false
+                Path = "appsettings.json",
+                Optional = false,
             });
             var additionalConfiguration = BuildAdditionalConfiguration(additionalConfigurations);
             configurationBuilder.AddConfiguration(additionalConfiguration);
