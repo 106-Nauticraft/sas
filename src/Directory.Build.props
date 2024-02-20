@@ -6,7 +6,7 @@
 
         <IsPackable>true</IsPackable>
 
-        <PackageIconUrl>icon.png</PackageIconUrl>
+        <PackageIcon>icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseUrl>LICENSE</PackageLicenseUrl>
         <PackageProjectUrl>https://github.com/benoit-maurice/sas</PackageProjectUrl>
