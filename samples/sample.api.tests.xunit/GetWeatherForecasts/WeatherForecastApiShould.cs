@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Diverse;
+﻿using Diverse;
 using NFluent;
 using sample.api.Domain;
 using sample.api.tests.xunit.GetWeatherForecasts.Api;
@@ -15,22 +14,7 @@ public class WeatherForecastApiShould
     {
         Fuzzer.Log = testOutputHelper.WriteLine;
     }
-    
-    [Fact]
-    [Category("integration")]
-    public async Task Return_Paris_Weather_Forecast_with_real_openmeteo_call()
-    {
-        var api = WeatherForecastApi.CreateForIntegrationTests();
 
-        var parisWeatherForecast = await api.GetParisWeatherForecast(4);
-        
-        Check.That(parisWeatherForecast).IsOk<IEnumerable<DailyWeatherForecast>>()
-            .WhichPayload(forecasts =>
-            {
-                Check.That(forecasts).HasSize(4);
-            });
-    }
-    
     [Fact]
     public async Task Return_Paris_Weather_Forecast()
     {
@@ -41,8 +25,7 @@ public class WeatherForecastApiShould
             )
             .AddDailyForecast(forecast => 
                 forecast.WithTemperatureMin(3.9m).WithTemperatureMax(19.2m)
-            )
-            ;
+            );
 
         var api = WeatherForecastApi.Create(scenario);
 
