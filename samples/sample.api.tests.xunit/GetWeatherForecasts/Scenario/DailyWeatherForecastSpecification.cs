@@ -10,6 +10,7 @@ public record DailyWeatherForecastSpecification(DateOnly Date, decimal Temperatu
         private decimal _temperatureMaxC = Math.Round(fuzzer.GenerateDecimal(-20m, 20m), 2);
         private readonly string _weatherCode = fuzzer.GenerateInteger(0, 100).ToString();
 
+
         public Builder WithTemperatureMin(decimal temperatureC)
         {
             _temperatureMinC = temperatureC;

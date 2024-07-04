@@ -6,15 +6,8 @@ using TimeZone = sample.api.Domain.TimeZone;
 
 namespace sample.api.HttpClients;
 
-public class OpenMeteoHttpClient
+public class OpenMeteoHttpClient(HttpClient httpClient)
 {
-    private readonly HttpClient _httpClient;
-
-    public OpenMeteoHttpClient(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-
     private record OpenMeteoDailyForecastsResponse(string[] Time, int[] WeatherCode, 
         [property:JsonPropertyName("temperature_2m_min")] decimal[] Temperature2mMin,
         [property:JsonPropertyName("temperature_2m_max")] decimal[] Temperature2mMax);
@@ -27,12 +20,12 @@ public class OpenMeteoHttpClient
             .With("longitude", coordinates.Longitude.ToString(CultureInfo.CreateSpecificCulture("en-US")))
             .With("timezone", timeZone.Name)
             .With("forecast_days", nbDays, days => days is > 0 and <= 15)
-            .With("daily", [
+            .With("daily", new []{
                 "weathercode", "temperature_2m_min", "temperature_2m_max"
-            ])
+            })
             .Build();
         
-        var response = await _httpClient.GetFromJsonAsync<OpenMeteoForecastsResponse>(url);
+        var response = await httpClient.GetFromJsonAsync<OpenMeteoForecastsResponse>(url);
 
         if (response is null)
         {
