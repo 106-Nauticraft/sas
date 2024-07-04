@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NSubstitute;
 using sas.Scenario;
 using sas.Simulators;
 
@@ -11,17 +10,23 @@ namespace sas.simulators.nunit;
 /// </summary>
 public class TestConsoleLoggerSimulator : ISimulateBehaviour
 {
+    private class TestLoggerFactory : ILoggerFactory
+    {
+        public void Dispose() { }
+
+        public void AddProvider(ILoggerProvider provider) { }
+
+        public ILogger CreateLogger(string categoryName)
+        {
+            return new TestConsoleLogger();
+        }
+    }
+    
     public void RegisterTo(IServiceCollection services, BaseScenario scenario)
     {
         var loggerInstance = new TestConsoleLogger(maxLevel: LogLevel.Information);
 
         services.AddSingleton<ILogger>(loggerInstance);
-        services.AddSingleton(_ =>
-        {
-            var loggerFactory = Substitute.For<ILoggerFactory>();
-            loggerFactory.CreateLogger(Arg.Any<string>())
-                .Returns(loggerInstance);
-            return loggerFactory;
-        });
+        services.AddSingleton<ILoggerFactory, TestLoggerFactory>();
     }
 }

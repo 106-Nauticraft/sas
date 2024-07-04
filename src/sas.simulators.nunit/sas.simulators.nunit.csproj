@@ -4,10 +4,6 @@
     <ProjectReference Include="..\sas\sas.csproj" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <IsPackable>true</IsPackable>
-  </PropertyGroup>
-  
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.13.3" />
   </ItemGroup>

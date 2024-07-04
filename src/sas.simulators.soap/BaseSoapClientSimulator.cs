@@ -2,7 +2,6 @@
 using System.ServiceModel.Channels;
 using HttpRequest.Spy;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using sas.Scenario;
 using sas.Simulators;
 using sas.simulators.http.Http;
@@ -21,22 +20,132 @@ public abstract class BaseSoapClientSimulator<TChannel, TClient> : ISimulateBeha
     
     private readonly Binding _binding = new BasicHttpBinding();
 
-    private readonly IDeferHttpRequestHandling _httpClient;
-    private readonly HttpRequestSpy _httpRequestSpy;
-    
-    protected SoapClientMessageHandler SoapClient { get; }
-    
-    protected SoapRequestSpy SoapRequestSpy { get; }
-
-    protected BaseSoapClientSimulator()
+    private class InternalHttpClient : IDeferHttpRequestHandling, IHandleSoapHttpRequest
     {
-        _httpClient = Substitute.For<IDeferHttpRequestHandling>();
-        _httpRequestSpy = HttpRequestSpy.Create();
-        SoapClient = new SoapClientMessageHandler(_httpClient);
-        SoapRequestSpy = new SoapRequestSpy(Uri, _httpRequestSpy);
+        public Task<HttpResponseMessage?> Get(string uri)
+        {
+            throw new NotImplementedException();
+        }
 
+        public Task<HttpResponseMessage?> Get(string uri, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<HttpResponseMessage?> Post(string uri, HttpContent? content)
+        {
+            return HandlePost(uri, content);
+        }
+
+        public Task<HttpResponseMessage?> Post(string uri, HttpContent? content, CancellationToken _)
+        {
+            return HandlePost(uri, content);
+        }
+
+        public Task<HttpResponseMessage?> Put(string uri, HttpContent? content)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<HttpResponseMessage?> Put(string uri, HttpContent? content, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<HttpResponseMessage?> Patch(string uri, HttpContent? content)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<HttpResponseMessage?> Patch(string uri, HttpContent? content, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<HttpResponseMessage?> Delete(string uri)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<HttpResponseMessage?> Delete(string uri, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<HttpResponseMessage?> Delete(string uri, HttpContent content)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<HttpResponseMessage?> Delete(string uri, HttpContent content, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<HttpResponseMessage?> Send(HttpRequestMessage request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<HttpResponseMessage?> Send(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+        
+        
+        private async Task<HttpResponseMessage?> HandlePost(string _, HttpContent? content)
+        {
+            if (content is null)
+            {
+                ArgumentNullException.ThrowIfNull(content);
+            }
+            
+            foreach (var (requestType, handler) in _handlers)
+            {
+                if (content.IsSoapRequest(requestType))
+                {
+                    return await handler(content);
+                }
+            }
+            
+            return null;
+        }
+
+        private readonly Dictionary<Type, Func<HttpContent, Task<HttpResponseMessage?>>> _handlers = new();
+        
+        public IHandleSoapHttpRequest HandleSoapRequest<TRequest, TResponse>(Func<TRequest, TResponse> handle)
+            where TRequest: class
+        {
+            _handlers[typeof(TRequest)] = content => OnSoapRequest(content, handle);
+            
+            return this;
+        }
+    
+        private static async Task<HttpResponseMessage?> OnSoapRequest<TRequest, TResponse>(HttpContent content, Func<TRequest, TResponse> handle) 
+        {
+            var soapVersion = await content.GetSoapMessageVersion();
+
+            var request = await content.
+                ReadFromXmlSoapBodyAsync<TRequest>(soapVersion);
+               
+            var response = handle(request!);
+
+            var httpContent = new SoapXmlContent(response, soapVersion);
+            return new HttpResponseMessage
+            {
+                Content = httpContent,
+            };
+        }
     }
     
+    private readonly IDeferHttpRequestHandling _httpClient = new InternalHttpClient();
+    private HttpRequestSpy HttpRequestSpy { get; } = HttpRequestSpy.Create();
+
+    protected IHandleSoapHttpRequest SoapClient => (IHandleSoapHttpRequest)_httpClient;
+
+    private SoapRequestSpy? _soapRequestSpy;
+    protected SoapRequestSpy SoapRequestSpy => _soapRequestSpy ??= new SoapRequestSpy(Uri, HttpRequestSpy);
+
     public void RegisterTo(IServiceCollection services, BaseScenario scenario)
     {
         var existing = services.SingleOrDefault(sd => sd.ServiceType == typeof(TChannel));
@@ -60,7 +169,7 @@ public abstract class BaseSoapClientSimulator<TChannel, TClient> : ISimulateBeha
             throw new SoapClientBuildException(typeof(TClient));
         }
 
-        var httpMessageHandler = new SpyHttpMessageHandler(_httpRequestSpy,
+        var httpMessageHandler = new SpyHttpMessageHandler(HttpRequestSpy,
             new HttpMessageInterceptionHandler(_httpClient, Uri, BuildUnexpectedSoapMessageError));
 
         soapClient.Endpoint.EndpointBehaviors.Add(new HttpMessageInterceptionEndpointBehaviour(httpMessageHandler));

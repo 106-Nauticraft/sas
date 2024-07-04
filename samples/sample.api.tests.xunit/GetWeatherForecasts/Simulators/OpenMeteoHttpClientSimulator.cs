@@ -2,11 +2,10 @@
 using System.Net.Http.Json;
 using System.Web;
 using NSubstitute;
-using NSubstitute.Core;
 using sample.api.HttpClients;
 using sample.api.tests.xunit.GetWeatherForecasts.Scenario;
 using sas.Scenario;
-using sas.simulators.http;
+using sas.simulators.http.nsubstitute;
 
 namespace sample.api.tests.xunit.GetWeatherForecasts.Simulators;
 

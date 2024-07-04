@@ -22,6 +22,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    
+    <PackageReference Include="NSubstitute" Version="5.0.0" />
   </ItemGroup>
   
   <ItemGroup>
@@ -30,7 +32,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    
+    <ProjectReference Include="..\..\src\sas.simulators.http.nsubstitute\sas.simulators.http.nsubstitute.csproj" />
+    
     <ProjectReference Include="..\..\src\sas.simulators.http\sas.simulators.http.csproj" />
+    <ProjectReference Include="..\..\src\sas.simulators.http\sas.simulators.http.nsubstitute.csproj" />
     <ProjectReference Include="..\..\src\sas.nfluent\sas.nfluent.csproj" />
     <ProjectReference Include="..\..\src\sas\sas.csproj" />
     <ProjectReference Include="..\sample.api\sample.api.csproj" />

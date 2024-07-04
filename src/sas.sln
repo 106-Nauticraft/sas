@@ -27,12 +27,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sample.api", "..\samples\sa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sample.api.tests.xunit", "..\samples\sample.api.tests.xunit\sample.api.tests.xunit.csproj", "{96CD2646-6EB4-4B45-8DA0-8EE77E4CCFF0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{62743EA8-0FD6-4A5D-8631-2638D7D9A3A3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{62743EA8-0FD6-4A5D-8631-2638D7D9A3A3}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		GitVersion.yml = GitVersion.yml
+		..\.github\workflows\main.yml = ..\.github\workflows\main.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sas.simulators.nsubstitute", "sas.simulators.nsubstitute\sas.simulators.nsubstitute.csproj", "{7B91D34A-5E5A-4E35-A8B1-B31F41C1B5AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sas.simulators.http.nsubstitute", "sas.simulators.http.nsubstitute\sas.simulators.http.nsubstitute.csproj", "{5EA48CB6-A200-41E5-9B41-39D8A86E6316}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +92,14 @@ Global
 		{96CD2646-6EB4-4B45-8DA0-8EE77E4CCFF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96CD2646-6EB4-4B45-8DA0-8EE77E4CCFF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96CD2646-6EB4-4B45-8DA0-8EE77E4CCFF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B91D34A-5E5A-4E35-A8B1-B31F41C1B5AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B91D34A-5E5A-4E35-A8B1-B31F41C1B5AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B91D34A-5E5A-4E35-A8B1-B31F41C1B5AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B91D34A-5E5A-4E35-A8B1-B31F41C1B5AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EA48CB6-A200-41E5-9B41-39D8A86E6316}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EA48CB6-A200-41E5-9B41-39D8A86E6316}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EA48CB6-A200-41E5-9B41-39D8A86E6316}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EA48CB6-A200-41E5-9B41-39D8A86E6316}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E83BC121-D0CE-4FC0-AD5D-5A2AAFE2C3A1} = {14C8B2E5-89EA-4CC2-BE36-B3FCB06CAAF2}

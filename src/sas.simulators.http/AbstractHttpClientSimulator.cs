@@ -1,16 +1,15 @@
 ﻿using HttpRequest.Spy;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using sas.Scenario;
 using sas.Simulators;
 using sas.simulators.http.Http;
 
 namespace sas.simulators.http;
 
-public abstract class BaseHttpClientSimulator<THttpClient> : ISimulateBehaviour
+public abstract class AbstractHttpClientSimulator<THttpClient> : ISimulateBehaviour
     where THttpClient : class
 {
-    protected IDeferHttpRequestHandling HttpClient { get; } = Substitute.For<IDeferHttpRequestHandling>();
+    protected abstract IDeferHttpRequestHandling HttpClient { get; }
 
     protected HttpRequestSpy Spy { get; } = HttpRequestSpy.Create();
 

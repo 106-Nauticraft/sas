@@ -42,14 +42,14 @@ public static class HttpContextExtensions
         return true;
     }
     
-    public static bool IsSoapRequest<TRequest>(this HttpContent content)
+    public static bool IsSoapRequest(this HttpContent content, Type requestType)
     {
         if (!content.IsSoapRequest())
         {
             return false;
         }
         
-        var name = typeof(TRequest).GetDataContractOrXmlTypeName();
+        var name = requestType.GetDataContractOrXmlTypeName();
 
         using var memoryStream = new MemoryStream();
         content.CopyToAsync(memoryStream).Wait(); 

@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using sas.Scenario;
 
 namespace sas.Simulators;
 
-public abstract class BaseSimulator<T> : ISimulateBehaviour
+public abstract class AbstractSimulator<T> : ISimulateBehaviour
     where T : class
 {
-    protected T Instance { get; } = Substitute.For<T>();
+    protected abstract T Instance { get; }
     
     public void RegisterTo(IServiceCollection services, BaseScenario scenario)
     {
@@ -20,19 +19,4 @@ public abstract class BaseSimulator<T> : ISimulateBehaviour
     }
         
     protected virtual void Simulate(BaseScenario scenario) { }
-        
-    public T Received(int i)
-    {
-        return Instance.Received(i);
-    }
-        
-    public T Received()
-    {
-        return Instance.Received();
-    }
-    
-    public T DidNotReceive()
-    {
-        return Instance.DidNotReceive();
-    }
 }
