@@ -1,5 +1,5 @@
 assembly-versioning-scheme: MajorMinorPatch
-mode: TrunkBased/preview1
+mode: TrunkBased
 increment: Patch
 branches:
   main:
