@@ -34,12 +34,16 @@ jobs:
         with:
           versionSpec: "6.0.x"
           includePrerelease: true
+          preferLatestVersion: true
 
       - name: Determine Version
         uses: gittools/actions/gitversion/execute@v0
         with:
           useConfigFile: true
           configFilePath: "./src/GitVersion.yml"
+        
+      - name: Determine Version
+        run: gitversion /config ./src/GitVersion.yml /output buildserver /nofetch
 
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION }}
