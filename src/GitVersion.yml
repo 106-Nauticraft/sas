@@ -1,8 +1,11 @@
 assembly-versioning-scheme: MajorMinorPatch
-mode: TrunkBased
 increment: Patch
+mode: Mainline
 branches:
   main:
     regex: ^main$
     increment: Patch
+    is-release-branch: false
+    is-mainline: true
     track-merge-target: false
+    prevent-increment-of-merged-branch-version: true
