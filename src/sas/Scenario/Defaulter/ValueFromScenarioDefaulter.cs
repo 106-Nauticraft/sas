@@ -1,29 +1,18 @@
 ﻿namespace sas.Scenario.Defaulter;
 
-public class ValueFromScenarioDefaulter<T>
+public class ValueFromScenarioDefaulter<T>(T? value, BaseScenario scenario, string? valueName)
 {
-    private readonly T? _value;
-    private readonly BaseScenario _scenario;
-    private readonly string? _valueName;
-
-    public ValueFromScenarioDefaulter(T? value, BaseScenario scenario, string? valueName)
-    {
-        _value = value;
-        _scenario = scenario;
-        _valueName = valueName;
-    }
-
     public T From<TScenario>(Func<TScenario, T?> defaultWith)
         where TScenario:BaseScenario
     {
-        if (_value is not null)
+        if (value is not null)
         {
-            return _value;
+            return value;
         }
 
-        if (_scenario is not TScenario castedScenario)
+        if (scenario is not TScenario castedScenario)
         {
-            throw new InvalidOperationException($"Unexpected scenario type {_scenario.GetType().Name}");
+            throw new InvalidOperationException($"Unexpected scenario type {scenario.GetType().Name}");
         }
         var defaultedValue = defaultWith(castedScenario);
         if (defaultedValue is not null)
@@ -31,6 +20,6 @@ public class ValueFromScenarioDefaulter<T>
             return defaultedValue;
         }
 
-        throw new InvalidOperationException( $"No values provided for {_valueName}");
+        throw new InvalidOperationException( $"No values provided for {valueName}");
     }
 }
