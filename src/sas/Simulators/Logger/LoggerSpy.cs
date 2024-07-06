@@ -13,12 +13,16 @@ public interface ISpyLogs
 
 internal class LoggerSpy<T> : ILogger<T>, ISpyLogs
 {
-    private record Scope<TState>(TState State) : IDisposable
+    private record Scope<TState>(TState _) : IDisposable
     {
         public void Dispose() { }
     }
 
+    #if NET7_0_OR_GREATER
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+    #else 
+    public IDisposable BeginScope<TState>(TState state)
+    #endif
     {
         return new Scope<TState>(state);
     }
@@ -60,12 +64,16 @@ internal class LoggerSpy<T> : ILogger<T>, ISpyLogs
 
 internal class LoggerSpy : ILogger, ISpyLogs
 {
-    private record Scope<TState>(TState State) : IDisposable
+    private record Scope<TState>(TState _) : IDisposable
     {
         public void Dispose() { }
     }
 
+    #if NET7_0_OR_GREATER
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+    #else 
+    public IDisposable BeginScope<TState>(TState state)
+    #endif
     {
         return new Scope<TState>(state);
     }
@@ -101,6 +109,6 @@ internal class LoggerSpy : ILogger, ISpyLogs
     public bool WasCalledOnlyWith(params (LogLevel level, string message)[] expected)
     {
         return expected.All(expectedLog => _logs.Contains(expectedLog)) 
-               && _logs.All(log => expected.Contains(log));
+               && _logs.All(expected.Contains);
     }
 }
