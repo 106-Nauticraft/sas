@@ -1,22 +1,14 @@
-﻿using Diverse;
-using NFluent;
+﻿using NFluent;
 using sample.api.Domain;
-using sample.api.tests.xunit.GetWeatherForecasts.Api;
-using sample.api.tests.xunit.GetWeatherForecasts.Scenario;
-using Xunit.Abstractions;
+using sample.api.tests.nunit.GetWeatherForecasts.Api;
+using sample.api.tests.nunit.GetWeatherForecasts.Scenario;
 
-namespace sample.api.tests.xunit.GetWeatherForecasts;
+namespace sample.api.tests.nunit.GetWeatherForecasts;
 
 public class WeatherForecastApiShould
 {
-
-    public WeatherForecastApiShould(ITestOutputHelper testOutputHelper)
-    {
-        Fuzzer.Log = testOutputHelper.WriteLine;
-    }
-
-    [Fact]
-    [Trait("Category", "integration")]
+    [Test]
+    [Category("integration")]
     public async Task Return_Paris_Weather_using_real_api()
     {
         var api = WeatherForecastApi.CreateForIntegrationTests();
@@ -28,8 +20,9 @@ public class WeatherForecastApiShould
                 Check.That(forecasts).HasSize(5);
             });
     }
-
-    [Fact]
+    
+    
+    [Test]
     public async Task Return_Paris_Weather_Forecast()
     {
         var scenario = new GetWeatherForecastScenario()
@@ -65,5 +58,4 @@ public class WeatherForecastApiShould
             
         });
     }
-    
 }
