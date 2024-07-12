@@ -42,6 +42,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sas.simulators.http.nsubsti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sample.api.tests.nunit", "..\samples\sample.api.tests.nunit\sample.api.tests.nunit.csproj", "{89EA078A-50EF-4030-A548-04CB67B2C286}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{D4B55369-70B4-4C77-9AE9-B19CE21FEA53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cities.soap", "..\samples\dependencies\cities.soap\cities.soap.csproj", "{C4768E53-A38F-4467-857F-6AA9714D85E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,10 +111,16 @@ Global
 		{89EA078A-50EF-4030-A548-04CB67B2C286}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89EA078A-50EF-4030-A548-04CB67B2C286}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89EA078A-50EF-4030-A548-04CB67B2C286}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4768E53-A38F-4467-857F-6AA9714D85E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4768E53-A38F-4467-857F-6AA9714D85E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4768E53-A38F-4467-857F-6AA9714D85E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4768E53-A38F-4467-857F-6AA9714D85E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E83BC121-D0CE-4FC0-AD5D-5A2AAFE2C3A1} = {14C8B2E5-89EA-4CC2-BE36-B3FCB06CAAF2}
 		{96CD2646-6EB4-4B45-8DA0-8EE77E4CCFF0} = {14C8B2E5-89EA-4CC2-BE36-B3FCB06CAAF2}
 		{89EA078A-50EF-4030-A548-04CB67B2C286} = {14C8B2E5-89EA-4CC2-BE36-B3FCB06CAAF2}
+		{D4B55369-70B4-4C77-9AE9-B19CE21FEA53} = {14C8B2E5-89EA-4CC2-BE36-B3FCB06CAAF2}
+		{C4768E53-A38F-4467-857F-6AA9714D85E7} = {D4B55369-70B4-4C77-9AE9-B19CE21FEA53}
 	EndGlobalSection
 EndGlobal
