@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <IsPackable>true</IsPackable>
+    <Authors>Benoît Maurice</Authors>
+    <Description>Includes NFluent extensions to ease the check of status codes and payloads of an API when using the Scenario/API/Simulators concept.</Description>
+    <PackageTags>testing;tests;acceptance;api;nfluent</PackageTags>
+    <RepositoryUrl>https://github.com/benoit-maurice/sas</RepositoryUrl>
   </PropertyGroup>
   
   <ItemGroup>

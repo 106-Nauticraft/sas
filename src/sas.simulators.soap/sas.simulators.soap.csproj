@@ -1,5 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Authors>Benoît Maurice</Authors>
+    <Description>Experimental, not production-ready yet.</Description>
+    <PackageTags>testing;tests;acceptance;api;http;httpclient</PackageTags>
+    <RepositoryUrl>https://github.com/benoit-maurice/sas</RepositoryUrl>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\sas\sas.csproj" />
     <ProjectReference Include="..\sas.simulators.http\sas.simulators.http.csproj" />
