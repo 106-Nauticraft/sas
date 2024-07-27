@@ -1,11 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <IsPackable>true</IsPackable>
-    <Authors>Benoît Maurice</Authors>
     <Description>This is the main package that includes all basic objects to build tests using the Scenario/API/Simulators concept.</Description>
     <PackageTags>testing;tests;acceptance;api</PackageTags>
-    <RepositoryUrl>https://github.com/benoit-maurice/sas</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

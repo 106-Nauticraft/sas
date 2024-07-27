@@ -1,11 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <IsPackable>true</IsPackable>
-    <Authors>Benoît Maurice</Authors>
     <Description>Includes a TestConsoleLoggerSimulator that provides a simulator that logs to test output (Nunit's TestContext.Out) when using the Scenario/API/Simulators concept and NUnit as a testing framework.</Description>
     <PackageTags>testing;tests;acceptance;api;http;httpclient</PackageTags>
-    <RepositoryUrl>https://github.com/benoit-maurice/sas</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

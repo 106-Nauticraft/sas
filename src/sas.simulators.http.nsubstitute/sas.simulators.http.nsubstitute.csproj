@@ -1,11 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <IsPackable>true</IsPackable>
-    <Authors>Benoît Maurice</Authors>
     <Description>Includes BaseHttpClientSimulator in order to create HttpClient simulators easily when using the Scenario/API/Simulators concept with NSubstitute as a mocking library.</Description>
     <PackageTags>testing;tests;acceptance;api;http;httpclient;nsubstitute</PackageTags>
-    <RepositoryUrl>https://github.com/benoit-maurice/sas</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
