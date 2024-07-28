@@ -1,6 +1,6 @@
 using Diverse;
 
-namespace sample.api.tests.xunit.GetWeatherForecasts.Scenario;
+namespace sample.api.tests.xunit.GetWeatherForecasts.Scenario.Specifications;
 
 public record DailyWeatherForecastSpecification(DateOnly Date, decimal TemperatureMinC, decimal TemperatureMaxC, string WeatherCode)
 {

@@ -1,4 +1,5 @@
 ﻿using Diverse;
+using sample.api.tests.xunit.GetWeatherForecasts.Scenario.Specifications;
 using sas.Scenario;
 using sas.Scenario.Setup;
 
@@ -8,16 +9,16 @@ public class GetWeatherForecastScenario : BaseScenario
 {
     private readonly IFuzz _fuzzer;
 
-    public string City { get; }
+    public CitySpecification City { get; private set; }
     public DateOnly Today { get; private set; }
 
     public int NbDays => DailyWeatherForecasts.Count;
-    public ICollection<DailyWeatherForecastSpecification> DailyWeatherForecasts { get; private set; }
-    
+    public ICollection<DailyWeatherForecastSpecification> DailyWeatherForecasts { get; }
+
     public GetWeatherForecastScenario(int? seed = null)
     { 
         _fuzzer = new Fuzzer(seed);
-        City = _fuzzer.PickOneFrom(["paris", "london", "new-york"]);
+        City = new CitySpecification.Builder(_fuzzer).Build();
         Today = DateOnly.FromDateTime(DateTime.Today);
 
         DailyWeatherForecasts = GenerateForecasts();
@@ -53,6 +54,13 @@ public class GetWeatherForecastScenario : BaseScenario
         var builder = new DailyWeatherForecastSpecification.Builder(_fuzzer);
 
         DailyWeatherForecasts.Add(setup.Apply(builder).Build(Today.AddDays(NbDays + 1)));
+        return this;
+    }
+
+    public GetWeatherForecastScenario WithCity(Setup<CitySpecification.Builder>? setup = null)
+    {
+        var builder = new CitySpecification.Builder(_fuzzer);
+        City = setup.Apply(builder).Build();
         return this;
     }
 }

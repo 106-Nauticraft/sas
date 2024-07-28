@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Web;
 using NSubstitute;
 using sample.api.HttpClients;
+using sample.api.Infra.HttpClients;
 using sample.api.tests.nunit.GetWeatherForecasts.Scenario;
 using sas.Scenario;
 using sas.simulators.http.nsubstitute;

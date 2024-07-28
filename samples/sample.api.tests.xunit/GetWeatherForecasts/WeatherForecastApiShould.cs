@@ -1,8 +1,10 @@
 ﻿using Diverse;
 using NFluent;
 using sample.api.Domain;
+using sample.api.Infra.HttpClients;
 using sample.api.tests.xunit.GetWeatherForecasts.Api;
 using sample.api.tests.xunit.GetWeatherForecasts.Scenario;
+using sample.api.tests.xunit.GetWeatherForecasts.Simulators;
 using Xunit.Abstractions;
 
 namespace sample.api.tests.xunit.GetWeatherForecasts;
@@ -64,6 +66,45 @@ public class WeatherForecastApiShould
             Check.That(dayTwoForecast.TemperatureMaxC.Value).IsEqualTo(19.2m);
             
         });
+    }
+
+    [Fact]
+    public async Task Return_Avranches_Weather_Forecast()
+    {
+        var scenario = new GetWeatherForecastScenario()
+            .WithToday(DateOnly.Parse("2024-01-01"))
+            .WithCity(city => city
+                .WithName("Avranches")
+                .WithCoordinates(48.6844, -1.3585)
+                .WithTimeZone("Europe/Paris"))
+            .AddDailyForecast(forecast => 
+                forecast
+                    .WithTemperatureMin(0m).WithTemperatureMax(12m)
+            );
+
+        var api = WeatherForecastApi.Create(scenario);
+
+        var parisWeatherForecast = await api.GetWeatherForecast("Avranches", 5);
+        
+        Check.That(parisWeatherForecast).IsOk<List<DailyWeatherForecast>>()
+            .WhichPayload(forecasts =>
+        {
+            Check.That(forecasts).IsNotNull();
+            Check.That(forecasts).HasSize(1);
+            
+            var dayOneForecast = forecasts![0];
+            
+            Check.That(dayOneForecast.Date).IsEqualTo(DateOnly.Parse("2024-01-02"));
+            Check.That(dayOneForecast.TemperatureMinC.Value).IsEqualTo(0m);
+            Check.That(dayOneForecast.TemperatureMaxC.Value).IsEqualTo(12m);            
+        });
+        
+        api.GetSimulator<OpenMeteoHttpClientSimulator>()
+            .DailyWeatherForecastWasCalledWith(
+                "48.6844", 
+                "-1.3585", 
+                "5",
+                "Europe/Paris");
     }
     
 }

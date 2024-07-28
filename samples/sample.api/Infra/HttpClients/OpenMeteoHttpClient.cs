@@ -4,9 +4,9 @@ using sample.api.Domain;
 using sample.api.HttpClients.Tools;
 using TimeZone = sample.api.Domain.TimeZone;
 
-namespace sample.api.HttpClients;
+namespace sample.api.Infra.HttpClients;
 
-public class OpenMeteoHttpClient(HttpClient httpClient)
+public class OpenMeteoHttpClient(HttpClient httpClient) : WeatherForecastsProvider
 {
     private record OpenMeteoDailyForecastsResponse(string[] Time, int[] WeatherCode, 
         [property:JsonPropertyName("temperature_2m_min")] decimal[] Temperature2mMin,
@@ -15,14 +15,15 @@ public class OpenMeteoHttpClient(HttpClient httpClient)
     
     public async Task<IEnumerable<DailyWeatherForecast>> GetDailyWeatherForecasts(Coordinates coordinates, TimeZone timeZone, int nbDays)
     {
+        var usSpecificCulture = CultureInfo.CreateSpecificCulture("en-US");
         var url = UrlBuilder.From("forecast")
-            .With("latitude", coordinates.Latitude.ToString(CultureInfo.CreateSpecificCulture("en-US")))
-            .With("longitude", coordinates.Longitude.ToString(CultureInfo.CreateSpecificCulture("en-US")))
+            .With("latitude", coordinates.Latitude.ToString(usSpecificCulture))
+            .With("longitude", coordinates.Longitude.ToString(usSpecificCulture))
             .With("timezone", timeZone.Name)
             .With("forecast_days", nbDays, days => days is > 0 and <= 15)
-            .With("daily", new []{
+            .With("daily", [
                 "weathercode", "temperature_2m_min", "temperature_2m_max"
-            })
+            ])
             .Build();
         
         var response = await httpClient.GetFromJsonAsync<OpenMeteoForecastsResponse>(url);

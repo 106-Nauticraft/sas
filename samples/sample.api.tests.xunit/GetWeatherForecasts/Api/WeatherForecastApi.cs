@@ -17,7 +17,10 @@ public class WeatherForecastApi : BaseApi<Startup>
 
     public static WeatherForecastApi Create(BaseScenario scenario)
     {
-        return new WeatherForecastApi(scenario, [new OpenMeteoHttpClientSimulator()], []);
+        return new WeatherForecastApi(scenario, [
+            new OpenMeteoHttpClientSimulator(),
+            new CityLocatorSimulator()
+        ], []);
     }
     
     public static WeatherForecastApi CreateForIntegrationTests()
@@ -29,5 +32,13 @@ public class WeatherForecastApi : BaseApi<Startup>
     {
         nbDays = Defaulting(nbDays).From<GetWeatherForecastScenario>(scenario => scenario.NbDays);
         return await HttpClient.GetAsync($"/WeatherForecast/paris?nbDays={nbDays}");
+    }
+    
+    public async Task<HttpResponseMessage> GetWeatherForecast(string city = "", int? nbDays = null)
+    {
+        nbDays = Defaulting(nbDays).From<GetWeatherForecastScenario>(scenario => scenario.NbDays);
+        city = Defaulting(city).From<GetWeatherForecastScenario>(scenario => scenario.City.Name);
+        
+        return await HttpClient.GetAsync($"/WeatherForecast/{city}?nbDays={nbDays}");
     }
 }

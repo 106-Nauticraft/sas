@@ -3,7 +3,9 @@ using System.Net.Http.Json;
 using System.Web;
 using NSubstitute;
 using sample.api.HttpClients;
+using sample.api.Infra.HttpClients;
 using sample.api.tests.xunit.GetWeatherForecasts.Scenario;
+using sample.api.tests.xunit.GetWeatherForecasts.Scenario.Specifications;
 using sas.Scenario;
 using sas.simulators.http.nsubstitute;
 
@@ -55,4 +57,14 @@ public class OpenMeteoHttpClientSimulator : BaseHttpClientSimulator<OpenMeteoHtt
     {
         return HttpUtility.ParseQueryString(url).Get(paramName) ?? throw new Exception($"No query param '{paramName}' found in '{url}'");
     }
+
+    public void DailyWeatherForecastWasCalledWith(string latitude, string longitude, string forecast_days, string timezone)
+    {
+        Spy.AGetRequestTo("forecast")
+            .WithQueryParam("latitude",latitude)
+            .WithQueryParam("longitude",longitude)
+            .WithQueryParam("forecast_days",forecast_days)
+            .WithQueryParam("timezone",timezone)
+            .OccurredOnce();
+    } 
 }
