@@ -24,4 +24,8 @@ Alternatively, you can install it via the NuGet Package Manager Console in Visua
 Install-Package sas
 ```
 
-## Getting Started
+There are several packages published that way, please see the [dedicated wiki page](https://github.com/benoit-maurice/sas/wiki/Available-packages) for more information.
+
+## Documentation and examples
+
+Please see the [wiki](https://github.com/benoit-maurice/sas/wiki) for more information about each package or code snippets.
