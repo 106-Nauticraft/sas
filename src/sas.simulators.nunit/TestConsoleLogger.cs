@@ -47,12 +47,7 @@ public class TestConsoleLogger(TextWriter? outputWriter = null, LogLevel maxLeve
         }
     }
 
-
-    #if NET7_0_OR_GREATER
     public IDisposable BeginScope<TState>(TState state) where TState : notnull
-    #else 
-    public IDisposable BeginScope<TState>(TState state)
-    #endif
     {
         return NullScope.Instance;
     }

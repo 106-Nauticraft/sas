@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <TargetFrameworks>net8.0;net7.0;net6.0</TargetFrameworks>
+        <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
@@ -10,7 +10,7 @@
         <PackageIcon>icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseUrl>LICENSE</PackageLicenseUrl>
-        <PackageProjectUrl>https://github.com/benoit-maurice/sas</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/106-Nauticraft/sas</PackageProjectUrl>
         <Authors>Benoît Maurice</Authors>
     </PropertyGroup>
 

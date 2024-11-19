@@ -18,11 +18,7 @@ internal class LoggerSpy<T> : ILogger<T>, ISpyLogs
         public void Dispose() { }
     }
 
-    #if NET7_0_OR_GREATER
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull
-    #else 
-    public IDisposable BeginScope<TState>(TState state)
-    #endif
     {
         return new Scope<TState>(state);
     }
@@ -69,11 +65,7 @@ internal class LoggerSpy : ILogger, ISpyLogs
         public void Dispose() { }
     }
 
-    #if NET7_0_OR_GREATER
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull
-    #else 
-    public IDisposable BeginScope<TState>(TState state)
-    #endif
     {
         return new Scope<TState>(state);
     }
