@@ -9,7 +9,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="HttpRequest.Spy" Version="1.0.7" />
+    <PackageVersion Include="HttpRequest.Spy" Version="1.0.10" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
