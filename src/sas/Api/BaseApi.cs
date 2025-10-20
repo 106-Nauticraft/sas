@@ -13,7 +13,7 @@ using sas.Simulators;
 namespace sas.Api;
 
 
-public abstract class BaseApi<TStartup>
+public abstract class BaseApi<TStartup> : IDisposable, IAsyncDisposable
     where TStartup : class
 {
     protected HttpClient HttpClient { get; }
@@ -22,21 +22,22 @@ public abstract class BaseApi<TStartup>
 
     private readonly BaseScenario _scenario;
     private readonly ISimulateBehaviour[] _simulators;
+    private readonly WebApplicationFactory<TStartup> _factory;
 
     protected BaseApi(BaseScenario scenario, ISimulateBehaviour[] simulators, IEnrichConfiguration[] configurations)
     {
-        var factory = new WebApplicationFactory<TStartup>();
+        _factory = new WebApplicationFactory<TStartup>();
 
         _scenario = scenario;
         _simulators = simulators;
 
-        factory = factory.WithWebHostBuilder(webHost => webHost
+        _factory = _factory.WithWebHostBuilder(webHost => webHost
             .ConfigureAppConfiguration(ConfigureAppConfiguration(configurations))
             .ConfigureTestServices(
             ConfigureTestServices(_simulators, scenario)
         ));
-        HttpClient = factory.CreateClient();
-        _services = factory.Services;
+        HttpClient = _factory.CreateClient();
+        _services = _factory.Services;
     }
     
     private static Action<IConfigurationBuilder>ConfigureAppConfiguration(IEnrichConfiguration[] additionalConfigurations) =>
@@ -106,4 +107,15 @@ public abstract class BaseApi<TStartup>
         return new ValueFromScenarioDefaulter<T>(value, _scenario, message);
     }
 
+    public void Dispose()
+    {
+        HttpClient.Dispose();
+        _factory.Dispose();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        HttpClient.Dispose();
+        await _factory.DisposeAsync();
+    }
 }

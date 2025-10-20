@@ -12,12 +12,14 @@ using sas.Simulators;
 
 namespace sas.Api;
 
-public abstract class LazyBaseApi<TStartup> where TStartup : class
+public abstract class LazyBaseApi<TStartup> : IDisposable, IAsyncDisposable
+    where TStartup : class
 {
     private HttpClient? _httpClient;
     private readonly BaseScenario _scenario;
     private readonly ISimulateBehaviour[] _simulators;
     private readonly IEnrichConfiguration[] _additionalConfigurations;
+    private WebApplicationFactory<TStartup>? _factory;
 
     protected LazyBaseApi(BaseScenario scenario,
         ISimulateBehaviour[] simulators,
@@ -30,9 +32,9 @@ public abstract class LazyBaseApi<TStartup> where TStartup : class
 
     private void InitWebApplication(Action<IServiceCollection> postSetup)
     {
-        var factory = new WebApplicationFactory<TStartup>();
+        _factory = new WebApplicationFactory<TStartup>();
 
-        factory = factory.WithWebHostBuilder(webHost => webHost
+        _factory = _factory.WithWebHostBuilder(webHost => webHost
             .ConfigureAppConfiguration(ConfigureAppConfiguration(_additionalConfigurations))
             .ConfigureTestServices(services =>
                 {
@@ -41,7 +43,7 @@ public abstract class LazyBaseApi<TStartup> where TStartup : class
                 }
             ));
         
-        _httpClient = factory.CreateClient();
+        _httpClient = _factory.CreateClient();
     }
     
     private static Action<IConfigurationBuilder>ConfigureAppConfiguration(IEnrichConfiguration[] additionalConfigurations) =>
@@ -109,5 +111,39 @@ public abstract class LazyBaseApi<TStartup> where TStartup : class
     protected ValueFromScenarioDefaulter<T> Defaulting<T>(T? value, [CallerArgumentExpression(nameof(value))] string? message = null)
     {
         return new ValueFromScenarioDefaulter<T>(value, _scenario, message);
+    }
+
+    public T GetRequiredService<T>() where T : notnull
+    {
+        if (_factory == null)
+        {
+            throw new NullReferenceException($"API was not built ; please use {nameof(BuildHttpClient)} before calling this method.");
+        }
+
+        try
+        {
+            return _factory.Services.GetRequiredService<T>();
+        }
+        // For scoped services, an exception is thrown and the IServiceScopeFactory is needed.
+        catch (InvalidOperationException)
+        {
+            using var scope = _factory.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            return scope.ServiceProvider.GetRequiredService<T>();
+        }
+    }
+
+    public void Dispose()
+    {
+        _httpClient?.Dispose();
+        _factory?.Dispose();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _httpClient?.Dispose();
+        if (_factory != null)
+        {
+            await _factory.DisposeAsync();
+        }
     }
 }
