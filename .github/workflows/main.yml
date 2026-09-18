@@ -2,9 +2,8 @@ name: CI
 
 on:
   push:
-    branch: main
-  pull_request:
-    branch: main
+    branches:
+      - main
 
 jobs:
   build:
@@ -30,14 +29,13 @@ jobs:
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v4
         with:
-          versionSpec: "6.0.x"
+          versionSpec: "6.8.x"
           includePrerelease: true
           preferLatestVersion: true
 
       - name: Determine Version
         uses: gittools/actions/gitversion/execute@v4
         with:
-          useConfigFile: true
           configFilePath: "./src/GitVersion.yml"
 
       - name: Restore dependencies
@@ -47,7 +45,7 @@ jobs:
         run: dotnet build ${{ env.SOLUTION }} --configuration ${{ env.BUILD_CONFIG }} --no-restore
 
       - name: Run tests
-        run: dotnet test ${{ env.SOLUTION }} --no-restore --verbosity normal
+        run: dotnet test ${{ env.SOLUTION }} --configuration ${{ env.BUILD_CONFIG }} --no-build --verbosity normal
 
       - name: Pack
         run: |
@@ -55,5 +53,5 @@ jobs:
           dotnet pack --configuration Release --output ../nupkg /p:Version=${{ env.GitVersion_SemVer }}
 
       - name: Publish
-        if: "!contains(github.event.head_commit.message, '+skip')"
+        if: github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '+skip')
         run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_ORG_API_KEY }} --source https://api.nuget.org/v3/index.json
