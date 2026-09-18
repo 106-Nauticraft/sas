@@ -16,27 +16,26 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
-            8.0.x
-            9.0.x
+            10.0.x
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0
+        uses: gittools/actions/gitversion/setup@v4
         with:
           versionSpec: "6.0.x"
           includePrerelease: true
           preferLatestVersion: true
 
       - name: Determine Version
-        uses: gittools/actions/gitversion/execute@v0
+        uses: gittools/actions/gitversion/execute@v4
         with:
           useConfigFile: true
           configFilePath: "./src/GitVersion.yml"
@@ -58,4 +57,3 @@ jobs:
       - name: Publish
         if: "!contains(github.event.head_commit.message, '+skip')"
         run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_ORG_API_KEY }} --source https://api.nuget.org/v3/index.json
-      
