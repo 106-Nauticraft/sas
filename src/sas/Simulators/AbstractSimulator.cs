@@ -3,7 +3,7 @@ using sas.Scenario;
 
 namespace sas.Simulators;
 
-public abstract class AbstractSimulator<T> : ISimulateBehaviour
+public abstract class AbstractSimulator<T> : ISimulateBehaviour, IBindScenario
     where T : class
 {
     protected abstract T Instance { get; }
@@ -15,8 +15,21 @@ public abstract class AbstractSimulator<T> : ISimulateBehaviour
             return;
         }
         services.AddSingleton(Instance);
-        Simulate(scenario);
+        Bind(scenario);
     }
-        
+
+    public void Bind(BaseScenario scenario)
+    {
+        Reset();
+        if (scenario is not NoScenario)
+            Simulate(scenario);
+    }
+
+    protected virtual void Reset() { }
     protected virtual void Simulate(BaseScenario scenario) { }
+}
+
+public interface IBindScenario
+{
+    void Bind(BaseScenario scenario);
 }

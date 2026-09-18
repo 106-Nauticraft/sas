@@ -6,7 +6,7 @@ using sas.simulators.http.Http;
 
 namespace sas.simulators.http;
 
-public abstract class AbstractHttpClientSimulator<THttpClient> : ISimulateBehaviour
+public abstract class AbstractHttpClientSimulator<THttpClient> : ISimulateBehaviour, IBindScenario
     where THttpClient : class
 {
     protected abstract IDeferHttpRequestHandling HttpClient { get; }
@@ -50,4 +50,15 @@ public abstract class AbstractHttpClientSimulator<THttpClient> : ISimulateBehavi
     }
 
     protected abstract void Simulate(BaseScenario scenario);
+    public void Bind(BaseScenario scenario)
+    {
+        Reset();
+        if (scenario is not NoScenario)
+            Simulate(scenario);
+    }
+
+    protected virtual void Reset()
+    {
+        
+    }
 }
