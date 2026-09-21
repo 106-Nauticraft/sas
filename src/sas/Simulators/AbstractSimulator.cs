@@ -10,10 +10,6 @@ public abstract class AbstractSimulator<T> : ISimulateBehaviour, IBindScenario
     
     public void RegisterTo(IServiceCollection services, BaseScenario scenario)
     {
-        if (scenario is NoScenario)
-        {
-            return;
-        }
         services.AddSingleton(Instance);
         Bind(scenario);
     }

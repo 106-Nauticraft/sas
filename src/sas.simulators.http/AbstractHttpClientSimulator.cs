@@ -11,20 +11,15 @@ public abstract class AbstractHttpClientSimulator<THttpClient> : ISimulateBehavi
 {
     protected abstract IDeferHttpRequestHandling HttpClient { get; }
 
-    protected HttpRequestSpy Spy { get; } = HttpRequestSpy.Create();
+    protected HttpRequestSpy Spy { get; private set; } = HttpRequestSpy.Create();
 
     private readonly Uri _baseUri = new($"https://{typeof(THttpClient).Name.ToLower()}-tests/");
 
     public void RegisterTo(IServiceCollection services, BaseScenario scenario)
     {
-        if (scenario is NoScenario)
-        {
-            return;
-        }
-
         // Using Transient here to avoid crashing when trying to inject a Singleton into a Scoped service.
         services.AddTransient(BuildHttpClient);
-        Simulate(scenario);
+        Bind(scenario);
     }
 
     private THttpClient BuildHttpClient(IServiceProvider provider)
@@ -59,6 +54,9 @@ public abstract class AbstractHttpClientSimulator<THttpClient> : ISimulateBehavi
 
     protected virtual void Reset()
     {
-        
+        Spy = HttpRequestSpy.Create();
+        ResetHttpClient();
     }
+
+    protected virtual void ResetHttpClient() { }
 }

@@ -1,4 +1,5 @@
-﻿using sas.simulators.http.Http;
+﻿using NSubstitute.ClearExtensions;
+using sas.simulators.http.Http;
 
 namespace sas.simulators.http.nsubstitute;
 
@@ -7,4 +8,6 @@ public abstract class BaseHttpClientSimulator<THttpClient> : AbstractHttpClientS
 {
     protected override IDeferHttpRequestHandling HttpClient { get; } =
         NSubstitute.Substitute.For<IDeferHttpRequestHandling>();
+
+    protected override void ResetHttpClient() => HttpClient.ClearSubstitute();
 }
