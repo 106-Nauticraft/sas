@@ -10,7 +10,7 @@ using sas.simulators.soap.Soap.Spy;
 
 namespace sas.simulators.soap;
 
-public abstract class BaseSoapClientSimulator<TChannel, TClient> : ISimulateBehaviour
+public abstract class BaseSoapClientSimulator<TChannel, TClient> : ISimulateBehaviour, IBindScenario
     where TChannel: class
     where TClient : ClientBase<TChannel>, TChannel
 {
@@ -138,13 +138,13 @@ public abstract class BaseSoapClientSimulator<TChannel, TClient> : ISimulateBeha
         }
     }
     
-    private readonly IDeferHttpRequestHandling _httpClient = new InternalHttpClient();
-    private HttpRequestSpy HttpRequestSpy { get; } = HttpRequestSpy.Create();
+    private IDeferHttpRequestHandling _httpClient = new InternalHttpClient();
+    private HttpRequestSpy _httpRequestSpy = HttpRequestSpy.Create();
 
     protected IHandleSoapHttpRequest SoapClient => (IHandleSoapHttpRequest)_httpClient;
 
     private SoapRequestSpy? _soapRequestSpy;
-    protected SoapRequestSpy SoapRequestSpy => _soapRequestSpy ??= new SoapRequestSpy(Uri, HttpRequestSpy);
+    protected SoapRequestSpy SoapRequestSpy => _soapRequestSpy ??= new SoapRequestSpy(Uri, _httpRequestSpy);
 
     public void RegisterTo(IServiceCollection services, BaseScenario scenario)
     {
@@ -154,10 +154,24 @@ public abstract class BaseSoapClientSimulator<TChannel, TClient> : ISimulateBeha
         {
             services.Remove(existing);
         }
+
+        services.AddTransient<TChannel>(_ => BuildStubbedSoapClient());
         
-        services.AddSingleton<TChannel>(_ => BuildStubbedSoapClient());
-        
-        Simulate(scenario);
+        Bind(scenario);
+    }
+
+    public void Bind(BaseScenario scenario)
+    {
+        Reset();
+        if (scenario is not NoScenario)
+            Simulate(scenario);
+    }
+
+    protected virtual void Reset()
+    {
+        _httpClient = new InternalHttpClient();
+        _httpRequestSpy = HttpRequestSpy.Create();
+        _soapRequestSpy = null;
     }
 
     private TClient BuildStubbedSoapClient()
@@ -169,7 +183,7 @@ public abstract class BaseSoapClientSimulator<TChannel, TClient> : ISimulateBeha
             throw new SoapClientBuildException(typeof(TClient));
         }
 
-        var httpMessageHandler = new SpyHttpMessageHandler(HttpRequestSpy,
+        var httpMessageHandler = new SpyHttpMessageHandler(_httpRequestSpy,
             new HttpMessageInterceptionHandler(_httpClient, Uri, BuildUnexpectedSoapMessageError));
 
         soapClient.Endpoint.EndpointBehaviors.Add(new HttpMessageInterceptionEndpointBehaviour(httpMessageHandler));

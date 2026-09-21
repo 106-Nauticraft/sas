@@ -8,7 +8,7 @@ namespace sas.simulators.nunit;
 /// <summary>
 /// Redirects logs to test output by using the TestConsoleLogger capabilities. Can facilitate investigations when an exception is raised in the tested code.
 /// </summary>
-public class TestConsoleLoggerSimulator : ISimulateBehaviour
+public class TestConsoleLoggerSimulator : ISimulateBehaviour, IBindScenario
 {
     private class TestLoggerFactory : ILoggerFactory
     {
@@ -29,4 +29,6 @@ public class TestConsoleLoggerSimulator : ISimulateBehaviour
         services.AddSingleton<ILogger>(loggerInstance);
         services.AddSingleton<ILoggerFactory, TestLoggerFactory>();
     }
+
+    public void Bind(BaseScenario scenario) { }
 }

@@ -7,7 +7,7 @@ public abstract class AbstractSimulator<T> : ISimulateBehaviour, IBindScenario
     where T : class
 {
     protected abstract T Instance { get; }
-    
+
     public void RegisterTo(IServiceCollection services, BaseScenario scenario)
     {
         services.AddSingleton(Instance);
@@ -23,9 +23,4 @@ public abstract class AbstractSimulator<T> : ISimulateBehaviour, IBindScenario
 
     protected virtual void Reset() { }
     protected virtual void Simulate(BaseScenario scenario) { }
-}
-
-public interface IBindScenario
-{
-    void Bind(BaseScenario scenario);
 }

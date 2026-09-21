@@ -10,9 +10,9 @@ namespace sas.simulators.nunit;
 public class TestConsoleLogger(TextWriter? outputWriter = null, LogLevel maxLevel = LogLevel.Trace)
     : ILogger
 {
-    private readonly TextWriter _outputWriter = outputWriter ?? TestContext.Out;
+    private TextWriter OutputWriter => outputWriter ?? TestContext.Out;
 
-    public TestConsoleLogger() : this(TestContext.Out)
+    public TestConsoleLogger() : this(outputWriter: null)
     {
     }
 
@@ -30,7 +30,7 @@ public class TestConsoleLogger(TextWriter? outputWriter = null, LogLevel maxLeve
             logMessage += $"{Environment.NewLine}Exception was : {exception}";
         }
 
-        _outputWriter.WriteLine(logMessage);
+        OutputWriter.WriteLine(logMessage);
     }
     
     private class NullScope : IDisposable

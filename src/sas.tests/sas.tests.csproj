@@ -5,10 +5,8 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
-
   <ItemGroup>
     <PackageReference Include="NFluent" />
-    <PackageReference Include="NSubstitute" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,8 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\sas.simulators.http\sas.simulators.http.csproj" />
-    <ProjectReference Include="..\sas.simulators.http.nsubstitute\sas.simulators.http.nsubstitute.csproj" />
+    <ProjectReference Include="..\sas\sas.csproj" />
   </ItemGroup>
 
 </Project>
