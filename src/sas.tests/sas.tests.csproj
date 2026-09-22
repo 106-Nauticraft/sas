@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\sas\sas.csproj" />
-    <!-- The web application the ApiHost / BaseApi tests run against. -->
     <ProjectReference Include="..\sas.tests.api\sas.tests.api.csproj" />
   </ItemGroup>
 

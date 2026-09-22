@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using sas.Configurations;
 using sas.Scenario;
 using sas.Scenario.Defaulter;
@@ -7,6 +7,14 @@ using sas.Simulators;
 namespace sas.Api;
 
 
+/// <summary>
+/// This is an abstraction that is exposed to outside world. Meant to be used once per test ; 1 test = 1 BaseApi.
+/// <para>
+/// Can either use a borrowed <see cref="ApiHost{TStartup}"/> or build and own its own.
+/// In the latter case, the <see cref="ApiHost{TStartup}"/> will be disposed of when this <see cref="BaseApi{TStartup}"/> is disposed.
+/// </para>
+/// </summary>
+/// <typeparam name="TStartup">Entry point (e.g. Program)</typeparam>
 public abstract class BaseApi<TStartup> : IDisposable, IAsyncDisposable
     where TStartup : class
 {
@@ -16,6 +24,12 @@ public abstract class BaseApi<TStartup> : IDisposable, IAsyncDisposable
     private readonly ApiHost<TStartup> _host;
     private readonly bool _ownsHost;
 
+    /// <summary>
+    /// Builds its own <see cref="ApiHost{TStartup}"/>. Will dispose it when this instance is disposed.
+    /// </summary>
+    /// <param name="scenario"></param>
+    /// <param name="simulators"></param>
+    /// <param name="configurations"></param>
     protected BaseApi(BaseScenario scenario, ISimulateBehaviour[] simulators, IEnrichConfiguration[] configurations)
     {
         _scenario = scenario;

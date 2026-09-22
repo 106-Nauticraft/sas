@@ -13,8 +13,8 @@ namespace sas.Api;
 /// <summary>
 /// The web application an API talks to: built once from a set of simulators, then re-bindable to another scenario.
 /// <para>
-/// A <see cref="BaseApi{TStartup}"/> built the usual way owns its host and disposes it. A host built on its own can
-/// instead be lent to successive APIs. Makes pooling possible: building the host is the expensive part, binding a scenario to it is not.
+/// It is the "infrastructure" part of an API and can be pooled. A <see cref="BaseApi{TStartup}"/> is the "per-test" façade ; it may own its host and dispose it.
+/// A host built on its own can instead be lent to successive APIs.
 /// </para>
 /// </summary>
 public sealed class ApiHost<TStartup> : IDisposable, IAsyncDisposable
@@ -48,14 +48,13 @@ public sealed class ApiHost<TStartup> : IDisposable, IAsyncDisposable
     /// Replays every simulator against another scenario.
     /// </summary>
     /// <exception cref="SimulatorCannotBeReboundException">
-    /// When a simulator does not implement <see cref="IBindScenario"/>. Such a simulator only ever sees the scenario
-    /// the host was built with, so binding would silently leave it behind.
+    /// When a simulator does not implement <see cref="IBindScenario"/>.
     /// </exception>
     public void Bind(BaseScenario scenario)
     {
         var notRebindable = _simulators.Where(simulator => simulator is not IBindScenario).ToArray();
 
-        if (notRebindable.Length > 0)
+        if (notRebindable.Any())
         {
             throw new SimulatorCannotBeReboundException(notRebindable);
         }

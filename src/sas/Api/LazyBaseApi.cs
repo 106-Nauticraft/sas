@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using sas.Configurations;
 using sas.Scenario;
@@ -7,6 +7,14 @@ using sas.Simulators;
 
 namespace sas.Api;
 
+/// <summary>
+/// This is an abstraction that is exposed to outside world. Meant to be used once per test ; 1 test = 1 LazyBaseApi.
+/// <para>
+/// Can either use a borrowed <see cref="ApiHost{TStartup}"/> or build and own its own.
+/// In the latter case, the <see cref="ApiHost{TStartup}"/> will be disposed of when this <see cref="LazyBaseApi{TStartup}"/> is disposed.
+/// </para>
+/// </summary>
+/// <typeparam name="TStartup">Entry point (e.g. Program)</typeparam>
 public abstract class LazyBaseApi<TStartup> : IDisposable, IAsyncDisposable
     where TStartup : class
 {
@@ -37,6 +45,7 @@ public abstract class LazyBaseApi<TStartup> : IDisposable, IAsyncDisposable
         return _httpClient = _host.CreateClient();
     }
 
+    // Must reimplement the logic found in ApiHost.GetSimulator because _host might still be null.
     public TSimulator GetSimulator<TSimulator>() where TSimulator : ISimulateBehaviour
     {
         var foundSimulator = _simulators.SingleOrDefault(simulator => simulator is TSimulator);
