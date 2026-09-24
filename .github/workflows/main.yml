@@ -2,9 +2,8 @@ name: CI
 
 on:
   push:
-    branch: main
-  pull_request:
-    branch: main
+    branches:
+      - main
 
 jobs:
   build:
@@ -16,29 +15,27 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
-            8.0.x
-            9.0.x
+            10.0.x
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0
+        uses: gittools/actions/gitversion/setup@v4
         with:
-          versionSpec: "6.0.x"
+          versionSpec: "6.8.x"
           includePrerelease: true
           preferLatestVersion: true
 
       - name: Determine Version
-        uses: gittools/actions/gitversion/execute@v0
+        uses: gittools/actions/gitversion/execute@v4
         with:
-          useConfigFile: true
           configFilePath: "./src/GitVersion.yml"
 
       - name: Restore dependencies
@@ -48,7 +45,7 @@ jobs:
         run: dotnet build ${{ env.SOLUTION }} --configuration ${{ env.BUILD_CONFIG }} --no-restore
 
       - name: Run tests
-        run: dotnet test ${{ env.SOLUTION }} --no-restore --verbosity normal
+        run: dotnet test ${{ env.SOLUTION }} --configuration ${{ env.BUILD_CONFIG }} --no-build --verbosity normal
 
       - name: Pack
         run: |
@@ -56,6 +53,5 @@ jobs:
           dotnet pack --configuration Release --output ../nupkg /p:Version=${{ env.GitVersion_SemVer }}
 
       - name: Publish
-        if: "!contains(github.event.head_commit.message, '+skip')"
+        if: github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '+skip')
         run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_ORG_API_KEY }} --source https://api.nuget.org/v3/index.json
-      

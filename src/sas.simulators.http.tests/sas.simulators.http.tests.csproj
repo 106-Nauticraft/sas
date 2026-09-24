@@ -26,10 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\sas.simulators.http\sas.simulators.http.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\sas.simulators.http\sas.simulators.http.csproj" />
+    <ProjectReference Include="..\sas.simulators.http.nsubstitute\sas.simulators.http.nsubstitute.csproj" />
   </ItemGroup>
 
 </Project>

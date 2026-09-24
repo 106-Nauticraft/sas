@@ -4,12 +4,10 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="NFluent" />
-    <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
@@ -24,9 +22,8 @@
     </PackageReference>
   </ItemGroup>
 
-
   <ItemGroup>
-    <ProjectReference Include="..\sas.nfluent\sas.nfluent.csproj" />
+    <ProjectReference Include="..\sas.simulators.soap\sas.simulators.soap.csproj" />
   </ItemGroup>
 
 </Project>

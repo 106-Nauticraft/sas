@@ -1,9 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using sas.Configurations;
 using sas.Scenario;
@@ -12,6 +7,15 @@ using sas.Simulators;
 
 namespace sas.Api;
 
+/// <summary>
+/// This is an abstraction that is exposed to outside world. Meant to be used once per test ; 1 test = 1 LazyBaseApi.
+/// <para>
+/// Can either use a borrowed <see cref="ApiHost{TStartup}"/> or build and own its own.
+/// In the latter case, the <see cref="ApiHost{TStartup}"/> will be disposed of when this <see cref="LazyBaseApi{TStartup}"/> is disposed.
+/// Either way, the scenario applies when the client is built, not when this API is created.
+/// </para>
+/// </summary>
+/// <typeparam name="TStartup">Entry point (e.g. Program)</typeparam>
 public abstract class LazyBaseApi<TStartup> : IDisposable, IAsyncDisposable
     where TStartup : class
 {
@@ -19,8 +23,12 @@ public abstract class LazyBaseApi<TStartup> : IDisposable, IAsyncDisposable
     private readonly BaseScenario _scenario;
     private readonly ISimulateBehaviour[] _simulators;
     private readonly IEnrichConfiguration[] _additionalConfigurations;
-    private WebApplicationFactory<TStartup>? _factory;
+    private readonly ApiHost<TStartup>? _borrowedHost;
+    private ApiHost<TStartup>? _host;
 
+    /// <summary>
+    /// Builds its own <see cref="ApiHost{TStartup}"/> on the first call to <see cref="BuildHttpClient()"/>. Will dispose it when this instance is disposed.
+    /// </summary>
     protected LazyBaseApi(BaseScenario scenario,
         ISimulateBehaviour[] simulators,
         IEnrichConfiguration[] additionalConfigurations)
@@ -30,63 +38,62 @@ public abstract class LazyBaseApi<TStartup> : IDisposable, IAsyncDisposable
         _additionalConfigurations = additionalConfigurations;
     }
 
-    private void InitWebApplication(Action<IServiceCollection> postSetup)
+    /// <summary>
+    /// Runs on a host built elsewhere instead of building one.
+    /// The host is bound to this scenario on the first call to <see cref="BuildHttpClient()"/>, and left alive when this API is disposed, so it can serve the next one.
+    /// </summary>
+    protected LazyBaseApi(BaseScenario scenario, ApiHost<TStartup> borrowedHost)
     {
-        _factory = new WebApplicationFactory<TStartup>();
-
-        _factory = _factory.WithWebHostBuilder(webHost => webHost
-            .ConfigureAppConfiguration(ConfigureAppConfiguration(_additionalConfigurations))
-            .ConfigureTestServices(services =>
-                {
-                    ConfigureTestServices(_simulators, _scenario)(services);
-                    postSetup(services);
-                }
-            ));
-        
-        _httpClient = _factory.CreateClient();
+        _scenario = scenario;
+        _simulators = [];
+        _additionalConfigurations = [];
+        _borrowedHost = borrowedHost;
     }
-    
-    private static Action<IConfigurationBuilder>ConfigureAppConfiguration(IEnrichConfiguration[] additionalConfigurations) =>
-        configurationBuilder =>
-        {
-            configurationBuilder.Sources.Clear();
-            configurationBuilder.Sources.Add(new JsonConfigurationSource
-            {
-                Path = "appsettings.json",
-                Optional = false
-            });
 
-            var additionalConfiguration = BuildAdditionalConfiguration(additionalConfigurations);
-            configurationBuilder.AddConfiguration(additionalConfiguration);
-        };
+    private bool OwnsHost => _borrowedHost is null;
 
-    private static IConfigurationRoot BuildAdditionalConfiguration(IEnumerable<IEnrichConfiguration> configurationEnrichers)
+    protected HttpClient BuildHttpClient() => Build(postSetup: null);
+
+    /// <param name="postSetup">Last say on the services. Only applies to a host this API builds.</param>
+    /// <exception cref="InvalidOperationException">When this API runs on a borrowed host, which is already built.</exception>
+    protected HttpClient BuildHttpClient(Action<IServiceCollection> postSetup) => Build(postSetup);
+
+    private HttpClient Build(Action<IServiceCollection>? postSetup)
     {
-        var configurationBuilder = new ConfigurationBuilder();
-
-        foreach (var configurationEnricher in configurationEnrichers)
+        if (_borrowedHost is not null && postSetup is not null)
         {
-            configurationEnricher.Enrich(configurationBuilder);
+            // Ignoring it would stub services the application can never resolve, silently.
+            throw new InvalidOperationException(
+                "A borrowed host is already built, so its services cannot be set up anymore. " +
+                $"Give the post setup to the {nameof(ApiHost<TStartup>)} constructor instead, or call {nameof(BuildHttpClient)}() without it.");
         }
 
-        return configurationBuilder.Build();
-    }
-    
-    protected HttpClient BuildHttpClient(Action<IServiceCollection> postSetup) 
-    {
         if (_httpClient is not null)
         {
             return _httpClient;
         }
 
-        InitWebApplication(postSetup);
-            
-        return _httpClient!;
-        
+        if (_borrowedHost is not null)
+        {
+            _borrowedHost.Bind(_scenario);
+            _host = _borrowedHost;
+        }
+        else
+        {
+            _host = new ApiHost<TStartup>(_scenario, _simulators, _additionalConfigurations, postSetup ?? (_ => { }));
+        }
+
+        return _httpClient = _host.CreateClient();
     }
 
+    // An owned host does not exist before the client is built, so its simulators are looked up here.
     public TSimulator GetSimulator<TSimulator>() where TSimulator : ISimulateBehaviour
     {
+        if (_borrowedHost is not null)
+        {
+            return _borrowedHost.GetSimulator<TSimulator>();
+        }
+
         var foundSimulator = _simulators.SingleOrDefault(simulator => simulator is TSimulator);
 
         if (foundSimulator is null)
@@ -98,16 +105,6 @@ public abstract class LazyBaseApi<TStartup> : IDisposable, IAsyncDisposable
         return (TSimulator) foundSimulator;
     }
 
-    private static Action<IServiceCollection> ConfigureTestServices(IEnumerable<ISimulateBehaviour> simulators,
-        BaseScenario scenario) =>
-        services =>
-        {
-            foreach (var simulator in simulators)
-            {
-                simulator.RegisterTo(services, scenario);
-            }
-        };
-    
     protected ValueFromScenarioDefaulter<T> Defaulting<T>(T? value, [CallerArgumentExpression(nameof(value))] string? message = null)
     {
         return new ValueFromScenarioDefaulter<T>(value, _scenario, message);
@@ -115,35 +112,31 @@ public abstract class LazyBaseApi<TStartup> : IDisposable, IAsyncDisposable
 
     public T GetRequiredService<T>() where T : notnull
     {
-        if (_factory == null)
+        if (_host == null)
         {
             throw new NullReferenceException($"API was not built ; please use {nameof(BuildHttpClient)} before calling this method.");
         }
 
-        try
-        {
-            return _factory.Services.GetRequiredService<T>();
-        }
-        // For scoped services, an exception is thrown and the IServiceScopeFactory is needed.
-        catch (InvalidOperationException)
-        {
-            using var scope = _factory.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
-            return scope.ServiceProvider.GetRequiredService<T>();
-        }
+        return _host.GetRequiredService<T>();
     }
 
     public void Dispose()
     {
         _httpClient?.Dispose();
-        _factory?.Dispose();
+
+        if (OwnsHost)
+        {
+            _host?.Dispose();
+        }
     }
 
     public async ValueTask DisposeAsync()
     {
         _httpClient?.Dispose();
-        if (_factory != null)
+
+        if (OwnsHost && _host != null)
         {
-            await _factory.DisposeAsync();
+            await _host.DisposeAsync();
         }
     }
 }

@@ -12,7 +12,7 @@ public class TestConsoleLogger(TextWriter? outputWriter = null, LogLevel maxLeve
 {
     private readonly TextWriter _outputWriter = outputWriter ?? TestContext.Out;
 
-    public TestConsoleLogger() : this(TestContext.Out)
+    public TestConsoleLogger() : this(outputWriter: null)
     {
     }
 

@@ -4,13 +4,19 @@ using sas.Scenario;
 
 namespace sas.Simulators.Logger;
 
-public class LoggerSimulator : ISimulateBehaviour, ISpyLogs
+public class LoggerSimulator : ISimulateBehaviour, ISpyLogs, IBindScenario
 {
     private readonly LoggerSpy _spy = new();
 
-    public void RegisterTo(IServiceCollection services, BaseScenario _)
+    public void RegisterTo(IServiceCollection services, BaseScenario scenario)
     {
         services.AddSingleton<ILogger>(_spy);
+        Bind(scenario);
+    }
+
+    public void Bind(BaseScenario _)
+    {
+        _spy.Clear();
     }
 
     public bool WasNeverCalled(LogLevel? specificLevelToCheck = null)
@@ -29,13 +35,19 @@ public class LoggerSimulator : ISimulateBehaviour, ISpyLogs
     }
 }
 
-public class LoggerSimulator<TTarget> : ISimulateBehaviour, ISpyLogs
+public class LoggerSimulator<TTarget> : ISimulateBehaviour, ISpyLogs, IBindScenario
 {
     private readonly LoggerSpy<TTarget> _spy = new();
 
-    public void RegisterTo(IServiceCollection services, BaseScenario _)
+    public void RegisterTo(IServiceCollection services, BaseScenario scenario)
     {
         services.AddSingleton<ILogger<TTarget>>(_spy);
+        Bind(scenario);
+    }
+
+    public void Bind(BaseScenario _)
+    {
+        _spy.Clear();
     }
 
     public bool WasNeverCalled(LogLevel? specificLevelToCheck = null)

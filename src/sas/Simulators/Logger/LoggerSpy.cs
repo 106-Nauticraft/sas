@@ -35,6 +35,11 @@ internal class LoggerSpy<T> : ILogger<T>, ISpyLogs
         _logs.Add((logLevel, $"{state}"));
     }
 
+    public void Clear()
+    {
+        _logs.Clear();
+    }
+
     public bool WasNeverCalled(LogLevel? specificLevelToCheck = null)
     {
         if (specificLevelToCheck is not null)
@@ -80,6 +85,11 @@ internal class LoggerSpy : ILogger, ISpyLogs
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         _logs.Add((logLevel, $"{state}"));
+    }
+
+    public void Clear()
+    {
+        _logs.Clear();
     }
 
     public bool WasNeverCalled(LogLevel? specificLevelToCheck = null)

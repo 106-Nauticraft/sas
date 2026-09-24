@@ -1,0 +1,37 @@
+name: PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: pr-${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      SOLUTION: "src/sas.sln"
+      BUILD_CONFIG: "Release"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION }}
+
+      - name: Build
+        run: dotnet build ${{ env.SOLUTION }} --configuration ${{ env.BUILD_CONFIG }} --no-restore
+
+      - name: Run tests
+        run: dotnet test ${{ env.SOLUTION }} --configuration ${{ env.BUILD_CONFIG }} --no-build --verbosity normal
