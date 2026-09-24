@@ -1,4 +1,5 @@
-﻿using sas.Api;
+﻿using Microsoft.Extensions.DependencyInjection;
+using sas.Api;
 using sas.Configurations;
 using sas.Scenario;
 using sas.Simulators;
@@ -21,6 +22,24 @@ public class GreetingApi : BaseApi<Startup>
         new(scenario, borrowedHost);
 
     public Task<string> Greet(string name) => HttpClient.GetStringAsync($"/greet/{name}");
+}
+
+public class LazyGreetingApi : LazyBaseApi<Startup>
+{
+    private LazyGreetingApi(BaseScenario scenario, ISimulateBehaviour[] simulators, IEnrichConfiguration[] configurations)
+        : base(scenario, simulators, configurations) { }
+
+    private LazyGreetingApi(BaseScenario scenario, ApiHost<Startup> borrowedHost)
+        : base(scenario, borrowedHost) { }
+
+    public static LazyGreetingApi Create(BaseScenario scenario) => new(scenario, [new GreetingSimulator()], []);
+
+    public static LazyGreetingApi RunningOn(ApiHost<Startup> borrowedHost, BaseScenario scenario) =>
+        new(scenario, borrowedHost);
+
+    public Task<string> Greet(string name) => BuildHttpClient().GetStringAsync($"/greet/{name}");
+
+    public Task<string> Prefix(Action<IServiceCollection> postSetup) => BuildHttpClient(postSetup).GetStringAsync("/prefix");
 }
 
 public class GreetingScenario(string name, string greeting) : BaseScenario

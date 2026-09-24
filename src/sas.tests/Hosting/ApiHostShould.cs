@@ -65,34 +65,58 @@ public class ApiHostShould
     }
 
     [Fact]
-    public async Task Refuse_to_bind_a_scenario_when_a_simulator_cannot_follow()
+    public async Task Serve_the_options_of_the_new_scenario_when_bound_again()
     {
         await using var host = new ApiHost<Startup>(new GreetingPrefixScenario("Hey"),
             [new GreetingPrefixSimulator()], []);
+        using var client = host.CreateClient();
+        Check.That(await client.GetStringAsync("/prefix")).IsEqualTo("Hey");
 
-        Check.ThatCode(() => host.Bind(new GreetingPrefixScenario("Yo")))
+        host.Bind(new GreetingPrefixScenario("Yo"));
+
+        Check.That(await client.GetStringAsync("/prefix")).IsEqualTo("Yo");
+    }
+
+    [Fact]
+    public async Task Configure_the_options_of_a_scenario_bound_after_being_built_with_no_scenario()
+    {
+        await using var host = new ApiHost<Startup>(BaseScenario.None, [new GreetingPrefixSimulator()], []);
+        using var client = host.CreateClient();
+        Check.That(await client.GetStringAsync("/prefix")).IsEqualTo(GreetingOptions.NotConfigured);
+
+        host.Bind(new GreetingPrefixScenario("Hey"));
+
+        Check.That(await client.GetStringAsync("/prefix")).IsEqualTo("Hey");
+    }
+
+    [Fact]
+    public async Task Refuse_to_bind_a_scenario_when_a_simulator_cannot_follow()
+    {
+        await using var host = new ApiHost<Startup>(BaseScenario.None, [new UnboundSimulator()], []);
+
+        Check.ThatCode(() => host.Bind(BaseScenario.None))
             .Throws<SimulatorCannotBeReboundException>()
             .AndWhichMessage()
-            .Contains(nameof(GreetingPrefixSimulator), nameof(IBindScenario));
+            .Contains(nameof(UnboundSimulator), nameof(IBindScenario));
     }
 
     [Fact]
     public async Task Name_every_simulator_that_cannot_follow_when_it_refuses_to_bind()
     {
         await using var host = new ApiHost<Startup>(BaseScenario.None,
-            [new GreetingSimulator(), new GreetingPrefixSimulator(), new UnboundSimulator()], []);
+            [new GreetingSimulator(), new UnboundSimulator(), new AnotherUnboundSimulator()], []);
 
         Check.ThatCode(() => host.Bind(BaseScenario.None))
             .Throws<SimulatorCannotBeReboundException>()
             .AndWhichMessage()
-            .Contains(nameof(GreetingPrefixSimulator), nameof(UnboundSimulator));
+            .Contains(nameof(UnboundSimulator), nameof(AnotherUnboundSimulator));
     }
 
     [Fact]
     public async Task Leave_every_simulator_on_its_current_scenario_when_it_refuses_to_bind()
     {
         await using var host = new ApiHost<Startup>(new GreetingScenario("Ada", "Hello Ada"),
-            [new GreetingSimulator(), new GreetingPrefixSimulator()], []);
+            [new GreetingSimulator(), new UnboundSimulator()], []);
         using var client = host.CreateClient();
 
         Check.ThatCode(() => host.Bind(new GreetingScenario("Grace", "Hi Grace")))
@@ -105,6 +129,11 @@ public class ApiHostShould
         new(scenario, [new GreetingSimulator()], []);
 
     public class UnboundSimulator : ISimulateBehaviour
+    {
+        public void RegisterTo(IServiceCollection services, BaseScenario scenario) { }
+    }
+
+    public class AnotherUnboundSimulator : ISimulateBehaviour
     {
         public void RegisterTo(IServiceCollection services, BaseScenario scenario) { }
     }

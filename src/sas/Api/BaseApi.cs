@@ -40,7 +40,7 @@ public abstract class BaseApi<TStartup> : IDisposable, IAsyncDisposable
     }
 
     /// <summary>
-    /// Runs on a host built elsewhere - a pool, typically - instead of building one.
+    /// Runs on a host built elsewhere instead of building one.
     /// The host is bound to this scenario and left alive when this API is disposed, so it can serve the next one.
     /// </summary>
     protected BaseApi(BaseScenario scenario, ApiHost<TStartup> borrowedHost)
